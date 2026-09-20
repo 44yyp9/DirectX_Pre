@@ -22,6 +22,9 @@ VS_OUTPUT main(float4 pos : POSITION, float3 nor : NORMAL, float4 col : COLOR)
     float3 normal = mul(nor, (float3x3) world);
     normal = normalize(normal);
     float lightAmount = saturate(dot(normal, (float3) light));
+    
+    float ambient = 0.3f;
+    lightAmount = saturate(lightAmount + ambient);
 
     output.color = float4(col.rgb * lightAmount, col.a);
     return output;
