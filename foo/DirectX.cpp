@@ -1,5 +1,6 @@
 #include "Main.h"
 #include "DirectX.h"
+#include "DirectXTex.h"
 
 //--------------------------------------------------------------------------------------
 // DirectX11::DirectX11()関数：コンストラクタ
@@ -46,6 +47,24 @@ HRESULT DirectX11::CompileShaderFromFile(const WCHAR* wcFileName, LPCSTR lpEntry
     }
 
     return S_OK;
+}
+
+Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> DirectX11::CreateTextureFromFile(const wchar_t* filename, ID3D11Device* device) {
+    DirectX::TexMetadata meta;
+    HRESULT hr = DirectX::GetMetadataFromWICFile(filename, DirectX::WIC_FLAGS_NONE, meta);
+    if (FAILED(hr)) 
+        return nullptr;
+    std::unique_ptr<DirectX::ScratchImage> image(new DirectX::ScratchImage);
+    hr = DirectX::LoadFromWICFile(filename, DirectX::WIC_FLAGS_NONE, &meta, *image);
+    if (FAILED(hr)) 
+        return nullptr;
+
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
+    hr = DirectX::CreateShaderResourceView(device, image->GetImages(), image->GetImageCount(), meta, &srv);
+    if (FAILED(hr)) 
+        return nullptr;
+
+    return srv;
 }
 
 //--------------------------------------------------------------------------------------
@@ -190,6 +209,7 @@ HRESULT DirectX11::InitDevice()
         {"POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0},
         { "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         { "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 40, D3D11_INPUT_PER_VERTEX_DATA, 0 },
     };
 
     UINT uiElements = ARRAYSIZE(layout);
@@ -208,10 +228,10 @@ HRESULT DirectX11::InitDevice()
     if (FAILED(hr))
         return hr;
     SimpleVertex vertices[] = {
-        { DirectX::XMFLOAT3(-0.5f, 0.5f, 0.0f), DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f), DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
-        { DirectX::XMFLOAT3(0.5f, 0.5f, 0.0f), DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f), DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
-        { DirectX::XMFLOAT3(-0.5f,-0.5f, 0.0f), DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f), DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) },
-        { DirectX::XMFLOAT3(0.5f,-0.5f, 0.0f), DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f) },
+        { DirectX::XMFLOAT3(-0.5f,  0.5f, 0.0f), DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), DirectX::XMFLOAT2(0.0f, 0.0f) }, // 左上
+        { DirectX::XMFLOAT3(0.5f,  0.5f, 0.0f), DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), DirectX::XMFLOAT2(1.0f, 0.0f) }, // 右上
+        { DirectX::XMFLOAT3(-0.5f, -0.5f, 0.0f), DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), DirectX::XMFLOAT2(0.0f, 1.0f) }, // 左下
+        { DirectX::XMFLOAT3(0.5f, -0.5f, 0.0f), DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), DirectX::XMFLOAT2(1.0f, 1.0f) }, // 右下
     };
 
     D3D11_BUFFER_DESC bd = {  };
@@ -252,6 +272,19 @@ HRESULT DirectX11::InitDevice()
     if (FAILED(hr))
         return hr;
 
+    D3D11_SAMPLER_DESC sampDesc = {};
+    sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+    sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+
+    Microsoft::WRL::ComPtr<ID3D11SamplerState> sampler;
+    hr = D3DDevice->CreateSamplerState(&sampDesc, &sampler);
+    if (FAILED(hr))
+        return hr;
+
+    m_D3DDeviceContext->PSSetSamplers(0, 1, sampler.GetAddressOf());
+
     Microsoft::WRL::ComPtr<ID3D11RasterizerState> D3DRasterizerState;
     D3D11_RASTERIZER_DESC ras = {};
     ras.FillMode = D3D11_FILL_SOLID;
@@ -262,7 +295,7 @@ HRESULT DirectX11::InitDevice()
     m_D3DDeviceContext->RSSetState(D3DRasterizerState.Get());
 
     m_matWorld = DirectX::XMMatrixIdentity();
-    DirectX::XMVECTOR vecEye = DirectX::XMVectorSet(0.0f, 0.0f, -3.0f, 0.0f);
+    DirectX::XMVECTOR vecEye = DirectX::XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
     DirectX::XMVECTOR vecFocus = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
     DirectX::XMVECTOR vecUp = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
     m_matView = DirectX::XMMatrixLookAtLH(vecEye, vecFocus, vecUp);
@@ -274,7 +307,6 @@ HRESULT DirectX11::InitDevice()
     m_D3DDeviceContext->VSSetShader(m_D3DVertexShader.Get(), nullptr, 0);
     m_D3DDeviceContext->VSSetConstantBuffers(0, 1, m_D3DConstantBuffer.GetAddressOf());
     m_D3DDeviceContext->PSSetShader(m_D3DPixelShader.Get(), nullptr, 0);
-
 
     //------------------------------------------------------------
     // DirectWriteの初期化
@@ -293,6 +325,10 @@ HRESULT DirectX11::InitDevice()
         return hr;
 
     hr = m_D2DDeviceContext->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &m_D2DSolidBrush);//&m_D2DSolidBrush 初期化
+    if (FAILED(hr))
+        return hr;
+
+    m_D3DTextureResourceView = CreateTextureFromFile(L"..\\Data\\verina.png", D3DDevice.Get());
     if (FAILED(hr))
         return hr;
 
@@ -390,6 +426,8 @@ void DirectX11::Render()
     m_D3DDeviceContext->Map(m_D3DConstantBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &msr);
     memcpy(msr.pData, (void*)(&cb), sizeof(cb));
     m_D3DDeviceContext->Unmap(m_D3DConstantBuffer.Get(), 0);
+    ID3D11ShaderResourceView* srvs[] = { m_D3DTextureResourceView.Get() };
+    m_D3DDeviceContext->PSSetShaderResources(0, 1, srvs);
     m_D3DDeviceContext->DrawIndexed(6, 0, 0);
     
     m_DXGISwapChain1->Present(0, 0);

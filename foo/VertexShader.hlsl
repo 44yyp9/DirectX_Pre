@@ -10,9 +10,10 @@ struct VS_OUTPUT
 {
     float4 pos : SV_POSITION;
     float4 color : NORMAL;
+    float2 uv : TEXCOORD;
 };
 
-VS_OUTPUT main(float4 pos : POSITION, float3 nor : NORMAL, float4 col : COLOR)
+VS_OUTPUT main(float4 pos : POSITION, float3 nor : NORMAL, float4 col : COLOR,float2 uv : TEXCOORD)
 {
     VS_OUTPUT output = (VS_OUTPUT) 0;
     output.pos = mul(pos, world);
@@ -24,6 +25,7 @@ VS_OUTPUT main(float4 pos : POSITION, float3 nor : NORMAL, float4 col : COLOR)
     float lightAmount = saturate(dot(normal, (float3) light));
     lightAmount = lightAmount * 0.5f + 0.5f;
 
-    output.color = float4(col.rgb * lightAmount, col.a);
+    output.color = col * lightAmount;
+    output.uv = uv;
     return output;
 }
