@@ -52,6 +52,7 @@ private:
     Microsoft::WRL::ComPtr<IDXGISwapChain1> m_DXGISwapChain1;
     Microsoft::WRL::ComPtr<ID2D1Bitmap1> m_D2DBitmap1;
     Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_D3DRenderTargetView;
+    Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_D3DDepthStencilView;
     Microsoft::WRL::ComPtr<ID3D11VertexShader> m_D3DVertexShader;
     Microsoft::WRL::ComPtr<ID3D11PixelShader> m_D3DPixelShader;
     Microsoft::WRL::ComPtr<ID3D11Buffer> m_D3DVertexBuffer;
