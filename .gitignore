@@ -69,3 +69,12 @@ Testing/
 .cache/
 
 .vs/
+
+x64/
+x86/
+Debug/
+Release/
+[Bb]in/
+[Oo]bj/
+*.tlog/
+*.lastbuildstate
