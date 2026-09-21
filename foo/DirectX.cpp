@@ -361,7 +361,7 @@ HRESULT DirectX11::InitDevice()
     m_D3DDeviceContext->RSSetState(D3DRasterizerState.Get());
 
     m_matWorld = DirectX::XMMatrixIdentity();
-    DirectX::XMVECTOR vecEye = DirectX::XMVectorSet(0.0f, 0.0f, -3.0f, 0.0f);
+    DirectX::XMVECTOR vecEye = DirectX::XMVectorSet(-3.0f, -2.0f, -3.0f, 0.0f);
     DirectX::XMVECTOR vecFocus = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
     DirectX::XMVECTOR vecUp = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
     m_matView = DirectX::XMMatrixLookAtLH(vecEye, vecFocus, vecUp);
@@ -395,7 +395,7 @@ HRESULT DirectX11::InitDevice()
     if (FAILED(hr))
         return hr;
 
-    m_D3DTextureResourceView = CreateTextureFromFile(L"..\\Assets\\Sprites\\verina.png", D3DDevice.Get());
+    m_D3DTextureResourceView = CreateTextureFromFile(L"..\\Assets\\Sprites\\sphere001.jpg", D3DDevice.Get());
     if (FAILED(hr))
         return hr;
 
@@ -407,7 +407,7 @@ HRESULT DirectX11::InitDevice()
 //--------------------------------------------------------------------------------------
 void DirectX11::Render()
 {
-    m_D3DDeviceContext->ClearRenderTargetView(m_D3DRenderTargetView.Get(), DirectX::Colors::Aquamarine);//m_D3DRenderTargetView‚Å‚Í‚È‚­m_D3DRenderTargetView.Get()
+    m_D3DDeviceContext->ClearRenderTargetView(m_D3DRenderTargetView.Get(), DirectX::Colors::AntiqueWhite);//m_D3DRenderTargetView‚Å‚Í‚È‚­m_D3DRenderTargetView.Get()
 
     m_D3DDeviceContext->ClearDepthStencilView(m_D3DDepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
