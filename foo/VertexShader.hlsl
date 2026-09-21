@@ -9,10 +9,11 @@ cbuffer ConstantBuffer : register(b0)
 struct VS_OUTPUT
 {
     float4 pos : SV_POSITION;
-    float4 color : NORMAL;
+    float4 color : COLOR;
+    float2 uv : TEXCOORD;
 };
 
-VS_OUTPUT main(float4 pos : POSITION, float3 nor : NORMAL, float4 col : COLOR)
+VS_OUTPUT main(float4 pos : POSITION, float3 nor : NORMAL, float4 col : COLOR, float2 uv : TEXCOORD)
 {
     VS_OUTPUT output = (VS_OUTPUT) 0;
     output.pos = mul(pos, world);
@@ -27,5 +28,6 @@ VS_OUTPUT main(float4 pos : POSITION, float3 nor : NORMAL, float4 col : COLOR)
     lightAmount = saturate(lightAmount + ambient);
 
     output.color = float4(col.rgb * lightAmount, col.a);
+    output.uv = uv;
     return output;
 }
