@@ -12,5 +12,5 @@ struct VS_OUTPUT
 float4 main(VS_OUTPUT input) : SV_TARGET
 {
     float4 texColor = g_texture.Sample(g_sampler, input.uv);
-    return texColor;
+    return texColor * input.color;
 }
