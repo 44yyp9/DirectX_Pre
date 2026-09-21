@@ -387,7 +387,7 @@ void DirectX11::Render()
     fangleX+= static_cast<FLOAT>(Window::GetFrameTime() / 1000.0);
     m_matWorld = DirectX::XMMatrixRotationY(fangleX*0.5f);
 
-    DirectX::XMVECTOR lightDir = DirectX::XMVector3Normalize(DirectX::XMVectorSet(0.0f, 0.5f, -1.0f, 0.0f));
+    DirectX::XMVECTOR lightDir = DirectX::XMVector3Normalize(DirectX::XMVectorSet(0.0f, 0.5f, 1.0f, 0.0f));
 
     static FLOAT fViewMoveZ = 0;
 
