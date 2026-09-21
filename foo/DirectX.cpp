@@ -243,46 +243,30 @@ HRESULT DirectX11::InitDevice()
     hr = D3DDevice->CreatePixelShader(D3DBlobPS->GetBufferPointer(), D3DBlobPS->GetBufferSize(), nullptr, &m_D3DPixelShader);
     if (FAILED(hr))
         return hr;
-    SimpleVertex vertices[] = {
-        { DirectX::XMFLOAT3(-0.5f,  0.5f, -0.5f), DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f), DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
-        { DirectX::XMFLOAT3(0.5f,  0.5f, -0.5f), DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f), DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
-        { DirectX::XMFLOAT3(-0.5f, -0.5f, -0.5f), DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f), DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
-        { DirectX::XMFLOAT3(0.5f, -0.5f, -0.5f), DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f), DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
+    std::vector<SimpleVertex> vertices(m_iVertexNum);
+    for (int v = 0;v <= m_iVMax;v++) {
+        for (int u = 0;u < m_iUMax;u++) {
+            double dTheta = DirectX::XMConvertToRadians(180.0f * v / m_iVMax);
+            double dPhi = DirectX::XMConvertToRadians(360.0f * u / m_iUMax);
+            float fX = static_cast<FLOAT>(sin(dTheta) * cos(dPhi));
+            float fY= static_cast<FLOAT>(cos(dTheta));
+            float fZ= static_cast<FLOAT>(sin(dTheta) * sin(dPhi));
 
-        { DirectX::XMFLOAT3(-0.5f,  0.5f,  0.5f), DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f), DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
-        { DirectX::XMFLOAT3(0.5f,  0.5f,  0.5f), DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f), DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
-        { DirectX::XMFLOAT3(-0.5f, -0.5f,  0.5f), DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f), DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
-        { DirectX::XMFLOAT3(0.5f, -0.5f,  0.5f), DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f), DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
-
-        { DirectX::XMFLOAT3(-0.5f,  0.5f,  0.5f), DirectX::XMFLOAT3(-1.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
-        { DirectX::XMFLOAT3(-0.5f,  0.5f, -0.5f), DirectX::XMFLOAT3(-1.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
-        { DirectX::XMFLOAT3(-0.5f, -0.5f,  0.5f), DirectX::XMFLOAT3(-1.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
-        { DirectX::XMFLOAT3(-0.5f, -0.5f, -0.5f), DirectX::XMFLOAT3(-1.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
-
-        { DirectX::XMFLOAT3(0.5f,  0.5f, -0.5f), DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
-        { DirectX::XMFLOAT3(0.5f,  0.5f,  0.5f), DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
-        { DirectX::XMFLOAT3(0.5f, -0.5f, -0.5f), DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
-        { DirectX::XMFLOAT3(0.5f, -0.5f,  0.5f), DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
-
-        { DirectX::XMFLOAT3(-0.5f,  0.5f,  0.5f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) },
-        { DirectX::XMFLOAT3(0.5f,  0.5f,  0.5f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) },
-        { DirectX::XMFLOAT3(-0.5f,  0.5f, -0.5f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) },
-        { DirectX::XMFLOAT3(0.5f,  0.5f, -0.5f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) },
-
-        { DirectX::XMFLOAT3(-0.5f, -0.5f, -0.5f), DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) },
-        { DirectX::XMFLOAT3(0.5f, -0.5f, -0.5f), DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) },
-        { DirectX::XMFLOAT3(-0.5f, -0.5f,  0.5f), DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) },
-        { DirectX::XMFLOAT3(0.5f, -0.5f,  0.5f), DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) },
-    };
+            int index = m_iUMax * v + u;
+            vertices[index].Pos = DirectX::XMFLOAT3(fX, fY, fZ);
+            vertices[index].Normal= DirectX::XMFLOAT3(fX, fY, fZ);
+            vertices[index].Color= DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+        }
+    }
 
     D3D11_BUFFER_DESC bd = {  };
-    bd.Usage = D3D11_USAGE_DYNAMIC;
-    bd.ByteWidth = sizeof(SimpleVertex) * 24;
+    bd.Usage = D3D11_USAGE_DEFAULT;
+    bd.ByteWidth = static_cast<UINT>(sizeof(SimpleVertex) * vertices.size());
     bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    bd.CPUAccessFlags = 0;
     
     D3D11_SUBRESOURCE_DATA sub = {};
-    sub.pSysMem = vertices;
+    sub.pSysMem = vertices.data();
     hr = D3DDevice->CreateBuffer(&bd, &sub, &m_D3DVertexBuffer);
     if (FAILED(hr))
         return hr;
@@ -290,25 +274,38 @@ HRESULT DirectX11::InitDevice()
     UINT uiOffeset = 0;
     m_D3DDeviceContext->IASetVertexBuffers(0, 1, m_D3DVertexBuffer.GetAddressOf(), &uiStride, &uiOffeset);
     Microsoft::WRL::ComPtr<ID3D11Buffer> D3DIndexBuffer;
-    WORD indices[] = {
-        0, 1, 2,  2, 1, 3, // ëOñ 
-        4, 5, 6,  6, 5, 7, // îwñ 
-        8, 9,10, 10, 9,11, // ç∂ñ 
-       12,13,14, 14,13,15, // âEñ 
-       16,17,18, 18,17,19, // è„ñ 
-       20,21,22, 22,21,23  // â∫ñ 
-    };
+
+    int i = 0;
+    std::vector<WORD> indices(m_iIndexNum);
+    for (int v = 0;v < m_iVMax;v++) {
+        for (int u = 0;u <= m_iUMax;u++) {
+            if (u == m_iUMax) {
+                indices[i] = static_cast<WORD>(v * m_iUMax);
+                i++;
+                indices[i] = static_cast<WORD>((v+1) * m_iUMax);
+                i++;
+            }
+            else
+            {
+                indices[i] = static_cast<WORD>((v * m_iUMax)+u);
+                i++;
+                indices[i] = static_cast<WORD>(indices[i-1]+ m_iUMax);
+                i++;
+            }
+        }
+    }
+
     bd.Usage = D3D11_USAGE_DEFAULT;
-    bd.ByteWidth = sizeof(WORD) * 36;
+    bd.ByteWidth = static_cast<UINT>(sizeof(WORD) * indices.size());
     bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
     bd.CPUAccessFlags = 0;
-    sub.pSysMem = indices;
+    sub.pSysMem = indices.data();
 
     hr = D3DDevice->CreateBuffer(&bd, &sub, &D3DIndexBuffer);
     if (FAILED(hr))
         return hr;
     m_D3DDeviceContext->IASetIndexBuffer(D3DIndexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
-    m_D3DDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    m_D3DDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
     bd.Usage = D3D11_USAGE_DYNAMIC;
     bd.ByteWidth = sizeof(ConstantBuffer);
     bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -320,7 +317,7 @@ HRESULT DirectX11::InitDevice()
     Microsoft::WRL::ComPtr<ID3D11RasterizerState> D3DRasterizerState;
     D3D11_RASTERIZER_DESC ras = {};
     ras.FillMode = D3D11_FILL_SOLID;
-    ras.CullMode = D3D11_CULL_NONE;
+    ras.CullMode = D3D11_CULL_BACK;
     hr = D3DDevice->CreateRasterizerState(&ras, &D3DRasterizerState);
     if (FAILED(hr))
         return hr;
@@ -458,7 +455,7 @@ void DirectX11::Render()
     m_D3DDeviceContext->Map(m_D3DConstantBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &msr);
     memcpy(msr.pData, (void*)(&cb), sizeof(cb));
     m_D3DDeviceContext->Unmap(m_D3DConstantBuffer.Get(), 0);
-    m_D3DDeviceContext->DrawIndexed(36, 0, 0);
+    m_D3DDeviceContext->DrawIndexed(m_iIndexNum, 0, 0);
     
     m_DXGISwapChain1->Present(0, 0);
     

@@ -66,4 +66,12 @@ private:
     //------------------------------------------------------------
     Microsoft::WRL::ComPtr<IDWriteTextFormat> m_DWriteTextFormat;
     Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> m_D2DSolidBrush;
+
+    //------------------------------------------------------------
+    // íËêî
+    //------------------------------------------------------------
+    const int m_iUMax = 24;
+    const int m_iVMax = 12;
+    int m_iVertexNum = m_iUMax * (m_iVMax + 1);
+    int m_iIndexNum = 2 * m_iVMax * (m_iUMax + 1);
 };
