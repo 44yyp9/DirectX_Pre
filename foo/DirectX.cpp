@@ -366,7 +366,7 @@ HRESULT DirectX11::InitDevice()
     DirectX::XMVECTOR vecUp = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
     m_matView = DirectX::XMMatrixLookAtLH(vecEye, vecFocus, vecUp);
 
-    m_matProjection = DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(90.0f),
+    m_matProjection = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4,
         static_cast<FLOAT>(Window::GetClientWidth()) / static_cast<FLOAT>(Window::GetClientHeight()),
         0.001f, 100.0f);
 
@@ -395,7 +395,7 @@ HRESULT DirectX11::InitDevice()
     if (FAILED(hr))
         return hr;
 
-    m_D3DTextureResourceView = CreateTextureFromFile(L"..\\Assets\\Sprites\\sphere001.jpg", D3DDevice.Get());
+    m_D3DTextureResourceView = CreateTextureFromFile(L"..\\Assets\\Sprites\\sphere001.png", D3DDevice.Get());
     if (FAILED(hr))
         return hr;
 
