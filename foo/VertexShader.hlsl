@@ -9,25 +9,18 @@ cbuffer ConstantBuffer : register(b0)
 struct VS_OUTPUT
 {
     float4 pos : SV_POSITION;
-    float4 color : COLOR;
+    float3 normal : NORMAL;
     float2 uv : TEXCOORD;
 };
 
-VS_OUTPUT main(float4 pos : POSITION, float3 nor : NORMAL, float4 col : COLOR, float2 uv : TEXCOORD)
+VS_OUTPUT main(float4 pos : POSITION, float3 nor : NORMAL, float2 uv : TEXCOORD)
 {
     VS_OUTPUT output = (VS_OUTPUT) 0;
     output.pos = mul(pos, world);
     output.pos = mul(output.pos, view);
     output.pos = mul(output.pos, projection);
     
-    float3 normal = mul(nor, (float3x3) world);
-    normal = normalize(normal);
-    float lightAmount = saturate(dot(normal, (float3) light));
-    
-    float ambient = 0.5f;
-    lightAmount = saturate(lightAmount + ambient);
-
-    output.color = float4(col.rgb * lightAmount, col.a);
+    output.normal = mul(nor, (float3x3) world);
     output.uv = uv;
     return output;
 }
