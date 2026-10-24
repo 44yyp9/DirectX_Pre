@@ -263,41 +263,33 @@ HRESULT DirectX11::InitDevice()
     hr = D3DDevice->CreatePixelShader(D3DBlobPS->GetBufferPointer(), D3DBlobPS->GetBufferSize(), nullptr, &m_D3DPixelShader);
     if (FAILED(hr))
         return hr;
-    // �ʂ��Ƃ�4���_����������B����ɂ��A�����̂̊e�ʂɐ������@����
-    // 2D�e�N�X�`����UV�i�e�ʑS�̂Ƀe�N�X�`����\��j��ݒ�ł���B
     std::vector<SimpleVertex> vertices =
     {
-        // -Z��
         {{-1.0f,  1.0f, -1.0f}, { 0.0f,  0.0f, -1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
         {{ 1.0f,  1.0f, -1.0f}, { 0.0f, 0.0f, -1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
         {{ 1.0f, -1.0f, -1.0f}, { 0.0f, 0.0f, -1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}},
         {{-1.0f, -1.0f, -1.0f}, { 0.0f, 0.0f, -1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
 
-        // +Z��
         {{ 1.0f,  1.0f,  1.0f}, { 0.0f, 0.0f,  1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
         {{-1.0f,  1.0f,  1.0f}, { 0.0f, 0.0f,  1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
         {{-1.0f, -1.0f,  1.0f}, { 0.0f, 0.0f,  1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}},
         {{ 1.0f, -1.0f,  1.0f}, { 0.0f, 0.0f,  1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
 
-        // +X��
         {{ 1.0f,  1.0f, -1.0f}, { 1.0f,  0.0f,  0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
         {{ 1.0f,  1.0f,  1.0f}, { 1.0f, 0.0f,  0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
         {{ 1.0f, -1.0f,  1.0f}, { 1.0f, 0.0f,  0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}},
         {{ 1.0f, -1.0f, -1.0f}, { 1.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
 
-        // -X��
         {{-1.0f,  1.0f,  1.0f}, {-1.0f,  0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
         {{-1.0f,  1.0f, -1.0f}, {-1.0f,  0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
         {{-1.0f, -1.0f, -1.0f}, {-1.0f,  0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}},
         {{-1.0f, -1.0f,  1.0f}, {-1.0f,  0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
 
-        // +Y��
         {{-1.0f,  1.0f,  1.0f}, { 0.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
         {{ 1.0f,  1.0f,  1.0f}, { 0.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
         {{ 1.0f,  1.0f, -1.0f}, { 0.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}},
         {{-1.0f,  1.0f, -1.0f}, { 0.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
 
-        // -Y��
         {{-1.0f, -1.0f, -1.0f}, { 0.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
         {{ 1.0f, -1.0f, -1.0f}, { 0.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
         {{ 1.0f, -1.0f,  1.0f}, { 0.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}},
@@ -320,7 +312,6 @@ HRESULT DirectX11::InitDevice()
     m_D3DDeviceContext->IASetVertexBuffers(0, 1, m_D3DVertexBuffer.GetAddressOf(), &uiStride, &uiOffeset);
     Microsoft::WRL::ComPtr<ID3D11Buffer> D3DIndexBuffer;
 
-    // �e�ʂ�2���̎O�p�`�ŕ`�悷��i6�� �~ 2�O�p�` �~ 3���_�j�B
     std::vector<WORD> indices =
     {
          0,  1,  2,  0,  2,  3, // -Z
@@ -341,7 +332,7 @@ HRESULT DirectX11::InitDevice()
     if (FAILED(hr))
         return hr;
     m_D3DDeviceContext->IASetIndexBuffer(D3DIndexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
-    m_D3DDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+    m_D3DDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     bd.Usage = D3D11_USAGE_DYNAMIC;
     bd.ByteWidth = sizeof(ConstantBuffer);
     bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -373,7 +364,7 @@ HRESULT DirectX11::InitDevice()
     m_D3DDeviceContext->RSSetState(D3DRasterizerState.Get());
 
     m_matWorld = DirectX::XMMatrixIdentity();
-    DirectX::XMVECTOR vecEye = DirectX::XMVectorSet(1.0f, -1.0f, -3.0f, 0.0f);
+    DirectX::XMVECTOR vecEye = DirectX::XMVectorSet(0.0f, 0.0f, -5.0f, 0.0f);
     DirectX::XMVECTOR vecFocus = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
     DirectX::XMVECTOR vecUp = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
     m_matView = DirectX::XMMatrixLookAtLH(vecEye, vecFocus, vecUp);
@@ -441,7 +432,7 @@ void DirectX11::Render()
     fangleX+= static_cast<FLOAT>(Window::GetFrameTime() / 1000.0);
     m_matWorld = DirectX::XMMatrixRotationY(fangleX*0.5f);
 
-    DirectX::XMVECTOR lightDir = DirectX::XMVector3Normalize(DirectX::XMVectorSet(0.0f, 0.5f, 1.0f, 0.0f));
+    DirectX::XMVECTOR lightDir = DirectX::XMVector3Normalize(DirectX::XMVectorSet(0.0f, 0.5f, -1.0f, 0.0f));
 
     static FLOAT fViewMoveZ = 0;
 
