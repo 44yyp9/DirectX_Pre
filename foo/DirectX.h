@@ -22,6 +22,7 @@ struct SimpleVertex
     DirectX::XMFLOAT3 Pos;
     DirectX::XMFLOAT3 Normal;
     DirectX::XMFLOAT4 Color;
+    DirectX::XMFLOAT2 UV;
 };
 
 struct ConstantBuffer
@@ -41,6 +42,7 @@ public:
     DirectX11();
     ~DirectX11();
     HRESULT CompileShaderFromFile(const WCHAR* wcFileName, LPCSTR lpEntryPoint, LPCSTR lpShaderModel, ID3DBlob** D3DBlob);
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> CreateTextureFromFile(const wchar_t* filename, ID3D11Device* device);
     HRESULT InitDevice();
     void Render();
 private:
@@ -53,6 +55,7 @@ private:
     Microsoft::WRL::ComPtr<ID2D1Bitmap1> m_D2DBitmap1;
     Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_D3DRenderTargetView;
     Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_D3DDepthStencilView;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_D3DTextureResourceView;
     Microsoft::WRL::ComPtr<ID3D11VertexShader> m_D3DVertexShader;
     Microsoft::WRL::ComPtr<ID3D11PixelShader> m_D3DPixelShader;
     Microsoft::WRL::ComPtr<ID3D11Buffer> m_D3DVertexBuffer;
@@ -66,4 +69,12 @@ private:
     //------------------------------------------------------------
     Microsoft::WRL::ComPtr<IDWriteTextFormat> m_DWriteTextFormat;
     Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> m_D2DSolidBrush;
+
+    //------------------------------------------------------------
+    // íËêî
+    //------------------------------------------------------------
+    const int m_iUMax = 24;
+    const int m_iVMax = 12;
+    int m_iVertexNum = m_iUMax * (m_iVMax + 1);
+    int m_iIndexNum = 2 * m_iVMax * (m_iUMax + 1);
 };
