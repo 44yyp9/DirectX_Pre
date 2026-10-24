@@ -73,8 +73,7 @@ private:
     //------------------------------------------------------------
     // 定数
     //------------------------------------------------------------
-    const int m_iUMax = 24;
-    const int m_iVMax = 12;
-    int m_iVertexNum = m_iUMax * (m_iVMax + 1);
-    int m_iIndexNum = 2 * m_iVMax * (m_iUMax + 1);
+    // 立方体は面ごとに法線とUVが異なるため、頂点を共有しない。
+    const int m_iVertexNum = 6 * 4;
+    const int m_iIndexNum = 6 * 2 * 3;
 };
