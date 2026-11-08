@@ -246,6 +246,7 @@ HRESULT DirectX11::InitDevice()
         { "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         { "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 40, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TANGENT",    0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 48, D3D11_INPUT_PER_VERTEX_DATA, 0 },
     };
 
     UINT uiElements = ARRAYSIZE(layout);
@@ -265,6 +266,7 @@ HRESULT DirectX11::InitDevice()
         return hr;
     std::vector<SimpleVertex> vertices =
     {
+        //TODO : レイアウトを合わせる
         {{-1.0f,  1.0f, -1.0f}, { 0.0f,  0.0f, -1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
         {{ 1.0f,  1.0f, -1.0f}, { 0.0f, 0.0f, -1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
         {{ 1.0f, -1.0f, -1.0f}, { 0.0f, 0.0f, -1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}},
@@ -402,6 +404,7 @@ HRESULT DirectX11::InitDevice()
     if (FAILED(hr))
         return hr;
     m_D3DTextureResourceView = CreateTextureFromFile(L"..\\Assets\\Sprites\\Brick001.png", D3DDevice.Get());
+    m_D3DNormalMapResourceView = CreateTextureFromFile(L"..\\Assets\\Sprites\\BrickNormalMap001.png", D3DDevice.Get());
 
     return S_OK;
 }
@@ -500,8 +503,11 @@ void DirectX11::Render()
     m_D3DDeviceContext->Map(m_D3DConstantBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &msr);
     memcpy(msr.pData, (void*)(&cb), sizeof(cb));
     m_D3DDeviceContext->Unmap(m_D3DConstantBuffer.Get(), 0);
-    ID3D11ShaderResourceView* srvs[] = { m_D3DTextureResourceView.Get() };
-    m_D3DDeviceContext->PSSetShaderResources(0, 1, srvs);
+    ID3D11ShaderResourceView* srvs[] = { 
+        m_D3DTextureResourceView.Get(),
+        m_D3DNormalMapResourceView.Get(),
+    };
+    m_D3DDeviceContext->PSSetShaderResources(0, 2, srvs);
     m_D3DDeviceContext->DrawIndexed(m_iIndexNum, 0, 0);
     
     m_DXGISwapChain1->Present(0, 0);
