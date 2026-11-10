@@ -39,7 +39,7 @@ float4 main(VS_OUTPUT input) : SV_TARGET
     float3 lightDir = normalize(light.xyz);
     float lightAmount = saturate(dot(normal, lightDir));
     
-    float ambient = 0.1f;
+    float ambient = 0.3f;
     lightAmount = saturate(lightAmount + ambient);
 
     float4 texColor = g_texture.Sample(g_sampler, input.uv);

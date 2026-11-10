@@ -365,7 +365,7 @@ HRESULT DirectX11::InitDevice()
     m_D3DDeviceContext->RSSetState(D3DRasterizerState.Get());
 
     m_matWorld = DirectX::XMMatrixIdentity();
-    DirectX::XMVECTOR vecEye = DirectX::XMVectorSet(3.0f, 2.0f, 5.0f, 0.0f);
+    DirectX::XMVECTOR vecEye = DirectX::XMVectorSet(-3.0f, -2.0f, -5.0f, 0.0f);
     DirectX::XMVECTOR vecFocus = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
     DirectX::XMVECTOR vecUp = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
     m_matView = DirectX::XMMatrixLookAtLH(vecEye, vecFocus, vecUp);
@@ -402,8 +402,8 @@ HRESULT DirectX11::InitDevice()
 
     if (FAILED(hr))
         return hr;
-    m_D3DTextureResourceView = CreateTextureFromFile(L"..\\Assets\\Sprites\\Brick001.png", D3DDevice.Get());
-    m_D3DNormalMapResourceView = CreateTextureFromFile(L"..\\Assets\\Sprites\\BrickNormalMap001.png", D3DDevice.Get());
+    m_D3DTextureResourceView = CreateTextureFromFile(L"..\\Assets\\Sprites\\Brick002.png", D3DDevice.Get());
+    m_D3DNormalMapResourceView = CreateTextureFromFile(L"..\\Assets\\Sprites\\BrickNormalMap002.png", D3DDevice.Get());
 
     return S_OK;
 }
