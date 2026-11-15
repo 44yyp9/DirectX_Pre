@@ -246,6 +246,7 @@ HRESULT DirectX11::InitDevice()
         { "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         { "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 40, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TANGENT",    0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 48, D3D11_INPUT_PER_VERTEX_DATA, 0 },
     };
 
     UINT uiElements = ARRAYSIZE(layout);
@@ -263,25 +264,38 @@ HRESULT DirectX11::InitDevice()
     hr = D3DDevice->CreatePixelShader(D3DBlobPS->GetBufferPointer(), D3DBlobPS->GetBufferSize(), nullptr, &m_D3DPixelShader);
     if (FAILED(hr))
         return hr;
-    std::vector<SimpleVertex> vertices(m_iVertexNum);
-    for (int v = 0;v <= m_iVMax;v++) {
-        for (int u = 0;u < m_iUMax;u++) {
-            double dTheta = DirectX::XMConvertToRadians(180.0f * v / m_iVMax);
-            double dPhi = DirectX::XMConvertToRadians(360.0f * u / m_iUMax);
-            float fX = static_cast<FLOAT>(sin(dTheta) * cos(dPhi));
-            float fY= static_cast<FLOAT>(cos(dTheta));
-            float fZ= static_cast<FLOAT>(sin(dTheta) * sin(dPhi));
+    std::vector<SimpleVertex> vertices =
+    {
+        {{-1.0f,  1.0f, -1.0f}, { 0.0f,  0.0f, -1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}, { 1.0f,  0.0f,  0.0f}},
+        {{ 1.0f,  1.0f, -1.0f}, { 0.0f, 0.0f, -1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}, { 1.0f,  0.0f,  0.0f}},
+        {{ 1.0f, -1.0f, -1.0f}, { 0.0f, 0.0f, -1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}, { 1.0f,  0.0f,  0.0f}},
+        {{-1.0f, -1.0f, -1.0f}, { 0.0f, 0.0f, -1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}, { 1.0f,  0.0f,  0.0f}},
 
-            float uCoord = static_cast<float>(u) / m_iUMax;
-            float vCoord = static_cast<float>(v) / m_iVMax;
+        {{ 1.0f,  1.0f,  1.0f}, { 0.0f, 0.0f,  1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}, {-1.0f,  0.0f,  0.0f}},
+        {{-1.0f,  1.0f,  1.0f}, { 0.0f, 0.0f,  1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}, {-1.0f,  0.0f,  0.0f}},
+        {{-1.0f, -1.0f,  1.0f}, { 0.0f, 0.0f,  1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}, {-1.0f,  0.0f,  0.0f}},
+        {{ 1.0f, -1.0f,  1.0f}, { 0.0f, 0.0f,  1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}, {-1.0f,  0.0f,  0.0f}},
 
-            int index = m_iUMax * v + u;
-            vertices[index].Pos = DirectX::XMFLOAT3(fX, fY, fZ);
-            vertices[index].Normal= DirectX::XMFLOAT3(fX, fY, fZ);
-            vertices[index].Color= DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-            vertices[index].UV = DirectX::XMFLOAT2(uCoord, vCoord);
-        }
-    }
+        {{ 1.0f,  1.0f, -1.0f}, { 1.0f,  0.0f,  0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}, { 0.0f, 0.0f, 1.0f }},
+        {{ 1.0f,  1.0f,  1.0f}, { 1.0f, 0.0f,  0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}, { 0.0f, 0.0f, 1.0f }},
+        {{ 1.0f, -1.0f,  1.0f}, { 1.0f, 0.0f,  0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}, { 0.0f, 0.0f, 1.0f }},
+        {{ 1.0f, -1.0f, -1.0f}, { 1.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}, { 0.0f, 0.0f, 1.0f }},
+
+        {{-1.0f,  1.0f,  1.0f}, {-1.0f,  0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}, { 0.0f, 0.0f, -1.0f }},
+        {{-1.0f,  1.0f, -1.0f}, {-1.0f,  0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}, { 0.0f, 0.0f, -1.0f }},
+        {{-1.0f, -1.0f, -1.0f}, {-1.0f,  0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}, { 0.0f, 0.0f, -1.0f }},
+        {{-1.0f, -1.0f,  1.0f}, {-1.0f,  0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}, { 0.0f, 0.0f, -1.0f }},
+
+        {{-1.0f,  1.0f,  1.0f}, { 0.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}, { 1.0f, 0.0f, 0.0f }},
+        {{ 1.0f,  1.0f,  1.0f}, { 0.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}, { 1.0f, 0.0f, 0.0f }},
+        {{ 1.0f,  1.0f, -1.0f}, { 0.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}, { 1.0f, 0.0f, 0.0f }},
+        {{-1.0f,  1.0f, -1.0f}, { 0.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}, { 1.0f, 0.0f, 0.0f }},
+
+        {{-1.0f, -1.0f, -1.0f}, { 0.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}, { 1.0f, 0.0f, 0.0f }},
+        {{ 1.0f, -1.0f, -1.0f}, { 0.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}, { 1.0f, 0.0f, 0.0f }},
+        {{ 1.0f, -1.0f,  1.0f}, { 0.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}, { 1.0f, 0.0f, 0.0f }},
+        {{-1.0f, -1.0f,  1.0f}, { 0.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}, { 1.0f, 0.0f, 0.0f }},
+    };
 
     D3D11_BUFFER_DESC bd = {  };
     bd.Usage = D3D11_USAGE_DEFAULT;
@@ -299,25 +313,15 @@ HRESULT DirectX11::InitDevice()
     m_D3DDeviceContext->IASetVertexBuffers(0, 1, m_D3DVertexBuffer.GetAddressOf(), &uiStride, &uiOffeset);
     Microsoft::WRL::ComPtr<ID3D11Buffer> D3DIndexBuffer;
 
-    int i = 0;
-    std::vector<WORD> indices(m_iIndexNum);
-    for (int v = 0;v < m_iVMax;v++) {
-        for (int u = 0;u <= m_iUMax;u++) {
-            if (u == m_iUMax) {
-                indices[i] = static_cast<WORD>(v * m_iUMax);
-                i++;
-                indices[i] = static_cast<WORD>((v+1) * m_iUMax);
-                i++;
-            }
-            else
-            {
-                indices[i] = static_cast<WORD>((v * m_iUMax)+u);
-                i++;
-                indices[i] = static_cast<WORD>(indices[i-1]+ m_iUMax);
-                i++;
-            }
-        }
-    }
+    std::vector<WORD> indices =
+    {
+         0,  1,  2,  0,  2,  3, // -Z
+         4,  5,  6,  4,  6,  7, // +Z
+         8,  9, 10,  8, 10, 11, // +X
+        12, 13, 14, 12, 14, 15, // -X
+        16, 17, 18, 16, 18, 19, // +Y
+        20, 21, 22, 20, 22, 23, // -Y
+    };
 
     bd.Usage = D3D11_USAGE_DEFAULT;
     bd.ByteWidth = static_cast<UINT>(sizeof(WORD) * indices.size());
@@ -329,7 +333,7 @@ HRESULT DirectX11::InitDevice()
     if (FAILED(hr))
         return hr;
     m_D3DDeviceContext->IASetIndexBuffer(D3DIndexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
-    m_D3DDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+    m_D3DDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     bd.Usage = D3D11_USAGE_DYNAMIC;
     bd.ByteWidth = sizeof(ConstantBuffer);
     bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -361,7 +365,7 @@ HRESULT DirectX11::InitDevice()
     m_D3DDeviceContext->RSSetState(D3DRasterizerState.Get());
 
     m_matWorld = DirectX::XMMatrixIdentity();
-    DirectX::XMVECTOR vecEye = DirectX::XMVectorSet(1.0f, -1.0f, -3.0f, 0.0f);
+    DirectX::XMVECTOR vecEye = DirectX::XMVectorSet(-3.0f, -2.0f, -5.0f, 0.0f);
     DirectX::XMVECTOR vecFocus = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
     DirectX::XMVECTOR vecUp = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
     m_matView = DirectX::XMMatrixLookAtLH(vecEye, vecFocus, vecUp);
@@ -396,9 +400,10 @@ HRESULT DirectX11::InitDevice()
     if (FAILED(hr))
         return hr;
 
-    m_D3DTextureResourceView = CreateTextureFromFile(L"..\\Assets\\Sprites\\sphere001.png", D3DDevice.Get());
     if (FAILED(hr))
         return hr;
+    m_D3DTextureResourceView = CreateTextureFromFile(L"..\\Assets\\Sprites\\Brick002.png", D3DDevice.Get());
+    m_D3DNormalMapResourceView = CreateTextureFromFile(L"..\\Assets\\Sprites\\BrickNormalMap002.png", D3DDevice.Get());
 
     return S_OK;
 }
@@ -429,7 +434,7 @@ void DirectX11::Render()
     fangleX+= static_cast<FLOAT>(Window::GetFrameTime() / 1000.0);
     m_matWorld = DirectX::XMMatrixRotationY(fangleX*0.5f);
 
-    DirectX::XMVECTOR lightDir = DirectX::XMVector3Normalize(DirectX::XMVectorSet(0.0f, 0.5f, 1.0f, 0.0f));
+    DirectX::XMVECTOR lightDir = DirectX::XMVector3Normalize(DirectX::XMVectorSet(0.0f, 0.5f, -1.0f, 0.0f));
 
     static FLOAT fViewMoveZ = 0;
 
@@ -497,8 +502,11 @@ void DirectX11::Render()
     m_D3DDeviceContext->Map(m_D3DConstantBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &msr);
     memcpy(msr.pData, (void*)(&cb), sizeof(cb));
     m_D3DDeviceContext->Unmap(m_D3DConstantBuffer.Get(), 0);
-    ID3D11ShaderResourceView* srvs[] = { m_D3DTextureResourceView.Get() };
-    m_D3DDeviceContext->PSSetShaderResources(0, 1, srvs);
+    ID3D11ShaderResourceView* srvs[] = { 
+        m_D3DTextureResourceView.Get(),
+        m_D3DNormalMapResourceView.Get(),
+    };
+    m_D3DDeviceContext->PSSetShaderResources(0, 2, srvs);
     m_D3DDeviceContext->DrawIndexed(m_iIndexNum, 0, 0);
     
     m_DXGISwapChain1->Present(0, 0);

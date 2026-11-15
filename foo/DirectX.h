@@ -23,6 +23,7 @@ struct SimpleVertex
     DirectX::XMFLOAT3 Normal;
     DirectX::XMFLOAT4 Color;
     DirectX::XMFLOAT2 UV;
+    DirectX::XMFLOAT3 Tangent;
 };
 
 struct ConstantBuffer
@@ -56,6 +57,7 @@ private:
     Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_D3DRenderTargetView;
     Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_D3DDepthStencilView;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_D3DTextureResourceView;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_D3DNormalMapResourceView;
     Microsoft::WRL::ComPtr<ID3D11VertexShader> m_D3DVertexShader;
     Microsoft::WRL::ComPtr<ID3D11PixelShader> m_D3DPixelShader;
     Microsoft::WRL::ComPtr<ID3D11Buffer> m_D3DVertexBuffer;
@@ -73,8 +75,7 @@ private:
     //------------------------------------------------------------
     // 定数
     //------------------------------------------------------------
-    const int m_iUMax = 24;
-    const int m_iVMax = 12;
-    int m_iVertexNum = m_iUMax * (m_iVMax + 1);
-    int m_iIndexNum = 2 * m_iVMax * (m_iUMax + 1);
+    // 立方体は面ごとに法線とUVが異なるため、頂点を共有しない。
+    const int m_iVertexNum = 6 * 4;
+    const int m_iIndexNum = 6 * 2 * 3;
 };
